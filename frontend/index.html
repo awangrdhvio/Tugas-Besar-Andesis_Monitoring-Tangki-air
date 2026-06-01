@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitoring Tangki | IoT Tank Monitor</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- ===== LOGIN SCREEN ===== -->
+ <div id="login-screen" class="login-screen">
+        <div class="login-bg-grid"></div>
+        <div class="login-card">
+            <div class="login-logo">
+
+                <div class="login-icon-ring">
+                    <svg width="42" height="42" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="7" y="5" width="26" height="30" rx="2" fill="#1e1e24" stroke="currentColor" stroke-width="1.5"/>
+                        <rect x="11" y="9" width="18" height="16" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                        <line x1="15" y1="13" x2="25" y2="13" stroke="currentColor" stroke-width="1" opacity="0.7"/>
+                        <line x1="15" y1="16" x2="21" y2="16" stroke="currentColor" stroke-width="1" opacity="0.7"/>
+                        <path d="M10 5 V7 H13 V5 H16 V7 H19 V5 H22 V7 H25 V5 H28 V7 H30 V5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                        <path d="M5 9H7 M5 12H7 M5 15H7 M5 18H7 M5 21H7 M5 24H7 M5 27H7 M5 30H7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        <path d="M33 9H35 M33 12H35 M33 15H35 M33 18H35 M33 21H35 M33 24H35 M33 27H35 M33 30H35" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        <rect x="16" y="33" width="8" height="4" rx="1" fill="none" stroke="currentColor" stroke-width="1.2"/>
+                    </svg>
+                </div>
+
+                <h2>Monitoring Tangki Air</h2>
+                <p>Kelompok 8 — Masukkan kata sandi untuk melanjutkan</p>
+            </div>
+            <div class="login-form">
+                <label>Kata Sandi</label>
+                <div class="password-input-wrapper">
+                    <input type="password" id="password-input" placeholder="Masukkan kata sandi..." autocomplete="off" />
+                    <button class="toggle-pw" id="toggle-pw" title="Tampilkan">
+                        <svg id="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="login-error hidden" id="login-error">Kata sandi salah. Coba lagi.</div>
+                <button class="login-btn" id="login-btn">Masuk</button>
+                <button class="exit-btn" id="exit-btn">Keluar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== DASHBOARD ===== -->
+    <div id="dashboard" class="dashboard-container hidden">
+        <header>
+            <div class="logo">
+                <span class="pulse-icon"></span>
+                <h1>Monitoring<span> Tangki Air</span></h1>
+            </div>
+            <div class="system-status">
+                <div id="connection-badge" class="badge online">ESP32: TERHUBUNG</div>
+                <div id="real-time-clock">00:00:00</div>
+            </div>
+
+            <div class="header-right">
+                <!-- Notification Bell -->
+                <div class="notif-bell-wrapper" id="notif-bell-wrapper">
+                    <button class="notif-bell" id="notif-bell" title="Riwayat Notifikasi">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;transform:none">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                        </svg>
+                        <span class="notif-count" id="notif-count">0</span>
+                    </button>
+                    <div class="notif-dropdown hidden" id="notif-dropdown">
+                        <div class="notif-dropdown-header">
+                            <span>Riwayat Notifikasi</span>
+                            <button id="clear-notifs">Hapus Semua</button>
+                        </div>
+                        <ul id="notif-list">
+                            <li class="notif-empty">Belum ada notifikasi</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Logout — ikon pintu keluar -->
+                <button class="logout-btn" id="logout-btn" title="Keluar">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;transform:none">
+                        <!-- Daun pintu -->
+                        <path d="M14 3h5a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-5"/>
+                        <!-- Panah keluar ke kiri -->
+                        <polyline points="9 16 4 12 9 8"/>
+                        <line x1="4" y1="12" x2="16" y2="12"/>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <main class="grid-layout">
+            <!-- Left: Tank Visual -->
+            <section class="card tank-visual-section">
+                <div class="glass-inner">
+                    <h3>Status Tangki Langsung</h3>
+                    <div class="tank-container">
+                        <div class="tank-cap">1.7 L Maks</div>
+                        <div class="tank-frame">
+                            <div id="water-level-fill" class="water-fill">
+                                <div class="wave"></div>
+                            </div>
+                            <div class="tank-liter-label" id="tank-liter-label">0.00 L</div>
+                        </div>
+                        <div class="tank-bottom-label">0 L</div>
+                    </div>
+                    <div class="status-indicator">
+                        <span id="status-text">SISTEM SIAP</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Middle: Metrics -->
+            <section class="card metrics-section">
+                <div class="glass-inner">
+                    <div class="circular-progress">
+                        <svg viewBox="0 0 100 100">
+                            <circle class="bg" cx="50" cy="50" r="45"></circle>
+                            <circle id="progress-bar" class="prog" cx="50" cy="50" r="45"></circle>
+                        </svg>
+                        <div class="percentage-display">
+                            <span id="percent-val">0</span><small>%</small>
+                        </div>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-box">
+                            <label>Volume Saat Ini</label>
+                            <div class="value"><span id="liter-val">0.00</span> <small>L</small></div>
+                        </div>
+                        <div class="stat-box">
+                            <label>Sisa Kapasitas</label>
+                            <div class="value"><span id="remain-val">1.70</span> <small>L</small></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- History -->
+            <section class="card history-section">
+                <div class="glass-inner">
+                    <div class="history-header">
+                        <h3>Riwayat Aktivitas</h3>
+                        <div class="history-controls">
+                            <!-- Filter by status -->
+                            <div class="filter-group">
+                                <button class="filter-btn active" data-status="semua">Semua</button>
+                                <button class="filter-btn" data-status="cukup">Penuh</button>
+                                <button class="filter-btn" data-status="sedang">Sedang</button>
+                                <button class="filter-btn" data-status="kritis">Kritis</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Waktu</th>
+                                    <th>Level</th>
+                                    <th>Volume</th>
+                                    <th>Status</th>
+                                    <th>Hapus</th>
+                                </tr>
+                            </thead>
+                            <tbody id="history-log"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Delete Confirm Modal -->
+    <div id="delete-modal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <div class="modal-icon">
+                <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#ff4d4d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:block;transform:none">
+                    <polyline points="3,6 21,6"/>
+                    <path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"/>
+                    <path d="M19 6 18 20a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                    <line x1="10" y1="11" x2="10" y2="17"/>
+                    <line x1="14" y1="11" x2="14" y2="17"/>
+                </svg>
+            </div>
+            <h4>Hapus Data?</h4>
+            <p>Data ini akan dihapus secara permanen dan tidak dapat dikembalikan.</p>
+            <div class="modal-actions">
+                <button id="modal-cancel">Batal</button>
+                <button id="modal-confirm" class="danger">Hapus</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Stack -->
+    <div id="toast-stack" class="toast-stack"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
